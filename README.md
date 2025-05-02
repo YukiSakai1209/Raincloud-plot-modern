@@ -47,73 +47,60 @@ RainCloud plots are a visualization technique that combines violin plots, boxplo
 ### Basic Usage
 
 ```python
-from raincloud_modern import RainCloud
-import matplotlib.pyplot as plt
-import pandas as pd
 import numpy as np
-from shared.src.visualization.styles import configure_plots
-
-# Configure plots with Nature style guidelines
-configure_plots()
+import pandas as pd
+import matplotlib.pyplot as plt
+from raincloud_modern import RainCloud
 
 # Create sample data
-np.random.seed(42)
+np.random.seed(10)
 data = pd.DataFrame({
-    'group': np.repeat(['Group 1', 'Group 2', 'Group 3'], 30),
-    'value': np.concatenate([
-        np.random.normal(0, 1, 30),
-        np.random.normal(1, 1, 30),
-        np.random.normal(2, 1, 30)
-    ]),
-    'condition': np.repeat(['Condition 1', 'Condition 2'], 45)
+    'value': np.concatenate([np.random.normal(0, 1, 100), np.random.normal(2, 1, 100)]),
+    'group': np.repeat(['A', 'B'], 100)
 })
 
-# Create a simple RainCloud plot
-fig, ax = plt.subplots(figsize=(6, 4))
-RainCloud(x='group', y='value', data=data, ax=ax)
-plt.title('Basic RainCloud Plot')
-plt.tight_layout()
-plt.savefig('basic_raincloud.png', dpi=300)
-```
+# Create figure
+fig, ax = plt.subplots(figsize=(8, 6))
 
-![Basic RainCloud Plot](/workspace/outputs/fixed/half_violin_fix.png)
+# Create RainCloud plot
+RainCloud(x='group', y='value', data=data, ax=ax)
+
+plt.tight_layout()
+plt.show()
+```
 
 ### With Hue and Connected Means
 
 ```python
-# Create a RainCloud plot with hue and connected means
-fig, ax = plt.subplots(figsize=(8, 5))
-RainCloud(x='group', y='value', hue='condition', data=data,
-          alpha=0.6, point_size=4, pointplot=True, connect_means=True,
-          ax=ax)
-plt.title('RainCloud Plot with Hue and Connected Means')
-plt.tight_layout()
-plt.savefig('hue_raincloud.png', dpi=300)
-```
+# Create sample data with hue
+data_hue = pd.DataFrame({
+    'value': np.concatenate([np.random.normal(0, 1, 100), np.random.normal(2, 1, 100), 
+                           np.random.normal(0.5, 1, 100), np.random.normal(2.5, 1, 100)]),
+    'group': np.repeat(['A', 'B'], 200),
+    'hue': np.repeat(['X', 'Y'], 200)
+})
 
-![RainCloud Plot with Hue](/workspace/outputs/fixed/comprehensive_fixed.png)
+fig, ax = plt.subplots(figsize=(10, 6))
+RainCloud(x='group', y='value', hue='hue', data=data_hue, connect_means=True, ax=ax)
+plt.tight_layout()
+```
 
 ### Adjusting Box Position
 
 ```python
-# Create a RainCloud plot with adjusted box position
-fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 4))
-
-# Default box offset (0)
-RainCloud(x='group', y='value', hue='condition', data=data,
-          dodge=False, ax=ax1)
-ax1.set_title('Dodge=False, Default Box Offset (0)')
-
-# Custom box offset (0.2)
-RainCloud(x='group', y='value', hue='condition', data=data,
-          dodge=False, box_offset=0.2, ax=ax2)
-ax2.set_title('Dodge=False, Box Offset=0.2')
-
+# Adjust box position when dodge is False
+fig, ax = plt.subplots(figsize=(8, 6))
+RainCloud(
+    x='group', 
+    y='value', 
+    hue='hue', 
+    data=data_hue, 
+    dodge=False, 
+    box_offset=0.15,  # Move boxplot to the right
+    ax=ax
+)
 plt.tight_layout()
-plt.savefig('boxplot_position.png', dpi=300)
 ```
-
-![Boxplot Position Adjustment](/workspace/outputs/fixed/boxplot_position_fix.png)
 
 ## Parameters
 
@@ -151,16 +138,16 @@ plt.savefig('boxplot_position.png', dpi=300)
 
 You can pass additional parameters to specific plot elements by prepending the parameter name with:
 
-- `cloud_` for violin plot parameters
-- `box_` for boxplot parameters
-- `rain_` for stripplot parameters
-- `point_` for pointplot parameters
+- `point_` for rain points
+- `box_` for boxplot elements
+- `violin_` for violin plot elements
+- `cloud_` for all elements
 
 Example:
 
 ```python
-RainCloud(x='group', y='value', data=data,
-          rain_color='blue', box_showfliers=False,
+RainCloud(x='group', y='value', data=data, 
+          point_color='red', box_color='blue', violin_color='green',
           cloud_linewidth=1, point_capsize=0.2)
 ```
 
@@ -169,14 +156,16 @@ RainCloud(x='group', y='value', data=data,
 For consistent styling across visualizations, use the `configure_plots()` function from the shared styles module:
 
 ```python
-from shared.src.visualization.styles import configure_plots
+from shared.src.visualization.styles import configure_plots, apply_nature_style
+
+# Apply consistent styling
 configure_plots()
-```
 
-To apply Nature journal style guidelines to a specific plot:
+# Create your plot
+fig, ax = plt.subplots(figsize=(8, 6))
+RainCloud(x='group', y='value', data=data, ax=ax)
 
-```python
-from raincloud_modern import apply_nature_style
+# Apply Nature journal styling
 apply_nature_style(fig, ax)
 ```
 
