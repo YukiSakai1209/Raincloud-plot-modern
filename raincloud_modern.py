@@ -142,7 +142,7 @@ def RainCloud(
 
     # Extract parameters for rain points
     rain_alpha = kwrain.pop("alpha", alpha)
-    rain_offset = kwrain.pop("offset", 0.2)
+    rain_offset = kwrain.pop("offset", 0.1)
     jitter_range = kwrain.pop("jitter_range", 0.05)
 
     # Extract parameters for box plots
@@ -537,7 +537,7 @@ def _draw_strip(ax, data, position, jitter, orient, color, size, alpha=None, jit
         positions = np.full(len(data), position)
 
     # Draw the points
-    points = ax.scatter(positions, data, c=color, s=size, alpha=alpha, **kwargs)
+    points = ax.scatter(positions, data, color=color, s=size, alpha=alpha, **kwargs)
 
     return points
 
